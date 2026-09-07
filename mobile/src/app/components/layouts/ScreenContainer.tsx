@@ -13,7 +13,7 @@ interface ScreenContainerProps {
 export function ScreenContainer({ 
   children, 
   scrollable = true, 
-  backgroundColor = '#F8F9FE'
+  backgroundColor = '#FFFAF7'
 }: ScreenContainerProps) {
   
   let tabBarHeight = 0;

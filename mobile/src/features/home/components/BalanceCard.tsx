@@ -1,4 +1,5 @@
 import { colors } from "@/constants/colors";
+import { cardShadow } from "@/constants/layout";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { Pressable, Text, View } from "react-native";
@@ -14,13 +15,7 @@ type BalanceCardProps = {
   data: BalanceCardType;
 };
 
-const cardShadow = {
-  shadowColor: "#000",
-  shadowOffset: { width: 0, height: 6 },
-  shadowOpacity: 0.06,
-  shadowRadius: 16,
-  elevation: 3,
-};
+
 
 
 

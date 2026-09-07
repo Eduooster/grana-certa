@@ -1,3 +1,5 @@
+import ProfileScreen from "@/features/profile/components/ProfileScreen";
+
 export default function Profile() {
-  return null;
+  return <ProfileScreen/>;
 }
