@@ -1,7 +1,7 @@
 package com.granacerta.modules.transfer.infra.persistence.repository;
 
-import com.granacerta.modules.transfer.infra.persistence.entity.TranferEntity;
+import com.granacerta.modules.transfer.infra.persistence.entity.TransferEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface JpaTransferRepository extends JpaRepository<TranferEntity, Long> {
+public interface JpaTransferRepository extends JpaRepository<TransferEntity, Long> {
 }
