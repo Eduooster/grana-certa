@@ -1,5 +1,7 @@
 package com.granacerta.modules.authentication.domain.entity;
 
+import com.granacerta.modules.authentication.domain.enums.AuthProvider;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 

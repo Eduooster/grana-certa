@@ -9,7 +9,7 @@ import com.granacerta.modules.financialAccount.domain.entity.FinancialAccount;
 
 import com.granacerta.modules.financialAccount.domain.repository.FinancialAccountRepository;
 import com.granacerta.modules.user.domain.entity.User;
-import com.granacerta.modules.user.domain.entity.UserRole;
+import com.granacerta.modules.user.domain.enums.UserRole;
 import com.granacerta.modules.user.domain.repository.UserRepository;
 import com.granacerta.security.jwt.AuthenticationToken;
 import lombok.extern.slf4j.Slf4j;

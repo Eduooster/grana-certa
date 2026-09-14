@@ -1,6 +1,6 @@
 package com.granacerta.modules.authentication.application.usecase;
 
-import com.granacerta.modules.user.domain.entity.UserRole;
+import com.granacerta.modules.user.domain.enums.UserRole;
 
 import java.util.UUID;
 

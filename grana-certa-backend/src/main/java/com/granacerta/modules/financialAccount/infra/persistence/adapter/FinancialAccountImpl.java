@@ -1,11 +1,15 @@
 package com.granacerta.modules.financialAccount.infra.persistence.adapter;
 
 import com.granacerta.modules.financialAccount.domain.entity.FinancialAccount;
+import com.granacerta.modules.financialAccount.domain.enums.FinancialAccountStatus;
 import com.granacerta.modules.financialAccount.domain.repository.FinancialAccountRepository;
 import com.granacerta.modules.financialAccount.infra.persistence.mapper.FinancialAccountMapper;
 import com.granacerta.modules.financialAccount.infra.persistence.repository.FinancialAccountJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 
@@ -25,5 +29,10 @@ public class FinancialAccountImpl implements FinancialAccountRepository {
 
         );
 
+    }
+
+    @Override
+    public Optional<FinancialAccount> findByIdAndUserIdAndActiveTrue(UUID accountId, UUID userId, FinancialAccountStatus status) {
+       return financialAccountJpaRepository.findByIdAndUserIdAndStatus(accountId, userId, status).map(financialAccountMapper::toDomain);
     }
 }

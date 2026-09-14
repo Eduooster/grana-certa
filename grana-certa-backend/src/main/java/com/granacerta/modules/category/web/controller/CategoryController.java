@@ -8,6 +8,7 @@ import com.granacerta.modules.category.web.dto.CategoryResponse;
 import com.granacerta.modules.category.web.dto.CreateCategoryRequest;
 import com.granacerta.security.userDetails.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
+
 
 @RestController
 @RequestMapping("/api/v1/categories")
@@ -29,6 +31,9 @@ public class CategoryController {
     public ResponseEntity<CategoryResponse> create(
             @RequestBody CreateCategoryRequest request, @AuthenticationPrincipal CustomUserDetails userPrincipal
     ) {
+
+
+
         CreateCategoryCommand command = categoryWebMapper.toCreateCommand(request,userPrincipal.getUserId());
 
         CreateCategoryResult result = createCategoryUseCase.execute(command);

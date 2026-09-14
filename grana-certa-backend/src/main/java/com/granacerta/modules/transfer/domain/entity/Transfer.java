@@ -3,12 +3,13 @@ package com.granacerta.modules.transfer.domain.entity;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.UUID;
 
 public class Transfer {
-    private Long id;
-    private Long userId;
-    private Long sourceAccountId;
-    private Long destinationAccountId;
+    private UUID id;
+    private UUID userId;
+    private UUID sourceAccountId;
+    private UUID destinationAccountId;
     private BigDecimal amount;
     private LocalDateTime createdAt;
 

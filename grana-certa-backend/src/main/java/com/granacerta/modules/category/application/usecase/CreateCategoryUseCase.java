@@ -2,6 +2,8 @@ package com.granacerta.modules.category.application.usecase;
 
 import com.granacerta.modules.category.domain.entity.Category;
 import com.granacerta.modules.category.domain.repository.CategoryRepository;
+import lombok.extern.slf4j.Slf4j;
+
 
 
 public class CreateCategoryUseCase {
@@ -13,6 +15,7 @@ public class CreateCategoryUseCase {
 
 
     public CreateCategoryResult execute(CreateCategoryCommand command) {
+
 
         Category category = Category
                 .create(command);

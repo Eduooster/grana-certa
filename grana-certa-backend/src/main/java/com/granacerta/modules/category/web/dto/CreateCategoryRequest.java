@@ -1,4 +1,10 @@
 package com.granacerta.modules.category.web.dto;
 
-public record CreateCategoryRequest() {
+import com.granacerta.modules.category.domain.enums.CategoryType;
+
+import java.util.UUID;
+
+public record CreateCategoryRequest(UUID parentCategoryId,
+                                    String name,
+                                    CategoryType type) {
 }

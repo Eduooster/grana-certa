@@ -1,6 +1,6 @@
 package com.granacerta.modules.authentication.domain.entity;
 
-import com.granacerta.modules.user.domain.entity.UserRole;
+import com.granacerta.modules.user.domain.enums.UserRole;
 
 public class UserAuth {
 

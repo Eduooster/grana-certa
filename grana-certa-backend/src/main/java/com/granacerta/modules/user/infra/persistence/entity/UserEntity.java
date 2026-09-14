@@ -1,8 +1,7 @@
 package com.granacerta.modules.user.infra.persistence.entity;
 
 
-import com.granacerta.modules.authentication.infra.persistence.entity.UserCredentialEntity;
-import com.granacerta.modules.user.domain.entity.UserRole;
+import com.granacerta.modules.user.domain.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 

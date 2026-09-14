@@ -13,9 +13,13 @@ import com.granacerta.modules.financialProfile.application.usecase.DeleteFinanci
 import com.granacerta.modules.financialProfile.application.usecase.GetFinancialProfileUseCase;
 import com.granacerta.modules.financialProfile.application.usecase.UpdateFinancialProfileUseCase;
 import com.granacerta.modules.financialProfile.domain.repository.FinancialProfileRepository;
+import com.granacerta.modules.transaction.application.usecase.*;
+import com.granacerta.modules.transaction.domain.repository.TransactionRepository;
 import com.granacerta.modules.user.domain.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import javax.print.DocFlavor;
 
 @Configuration
 public class BeanConfig {
@@ -59,6 +63,29 @@ public class BeanConfig {
         @Bean
         public CreateCategoryUseCase createCategoryUseCase(CategoryRepository categoryRepository) {
         return new CreateCategoryUseCase(categoryRepository);
+        }
+        @Bean
+        public CreateTransactionUseCase createTransactionUseCase(TransactionRepository transactionRepository,CategoryRepository categoryRepository,FinancialAccountRepository financialAccountRepository ) {
+        return new CreateTransactionUseCase(transactionRepository,categoryRepository, financialAccountRepository     );
+        }
+        @Bean
+        public GetTransactionsUseCase getTransactionsUseCas (TransactionRepository transactionRepository) {
+        return new GetTransactionsUseCase(transactionRepository);
+        }
+
+
+        @Bean
+        public GetTransactionUseCase getTransactionUseCas (TransactionRepository transactionRepository){
+        return new GetTransactionUseCase(transactionRepository);
+        }
+
+        @Bean
+        public UpdateTransactionUseCase updateTransactionUseCase (TransactionRepository transactionRepository,CategoryRepository categoryRepository) {
+        return new UpdateTransactionUseCase(transactionRepository,categoryRepository);
+        }
+        @Bean
+        public DeleteTransactionUseCase deleteTransactionUseCase (TransactionRepository transactionRepository) {
+            return new DeleteTransactionUseCase(transactionRepository);
         }
 
 
