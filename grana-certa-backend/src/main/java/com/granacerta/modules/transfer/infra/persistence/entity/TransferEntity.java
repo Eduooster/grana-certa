@@ -11,6 +11,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "grana_certa_transfer")
@@ -22,21 +23,27 @@ import java.time.LocalDateTime;
 public class TransferEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(name = "user_id", nullable = false)
-    private Long userId;
+    private UUID userId;
 
     @Column(name = "source_account_id", nullable = false)
-    private Long sourceAccountId;
+    private UUID sourceAccountId;
 
     @Column(name = "destination_account_id", nullable = false)
-    private Long destinationAccountId;
+    private UUID destinationAccountId;
 
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal amount;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "transferred_at", nullable = false)
+    private LocalDateTime transferredAt;
+
+
+    private boolean isActive;
 }

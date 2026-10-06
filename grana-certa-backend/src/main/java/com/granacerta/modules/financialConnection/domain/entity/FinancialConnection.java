@@ -1,6 +1,8 @@
 package com.granacerta.modules.financialConnection.domain.entity;
 
 import com.granacerta.modules.financialConnection.domain.enums.FinancialConnectionStatus;
+import com.granacerta.modules.financialConnection.domain.enums.SyncStatus;
+import com.granacerta.modules.user.domain.entity.User;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -9,18 +11,48 @@ public class FinancialConnection {
 
     private UUID id;
     private UUID userId;
+    private UUID financialInstitutionId;
 
-    private String institutionName;
     private String provider;
     private String externalId;
 
     private FinancialConnectionStatus status;
+    private  SyncStatus syncStatus;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private LocalDateTime connectedAt;
+    private LocalDateTime lastSyncedAt;
+
+    public FinancialConnection() {
+    }
+
+    public FinancialConnection(String externalId, User user) {
+
+
+    }
+
+
+    public static FinancialConnection create(UUID userId, UUID financialInstitutionId, String provider, String externalId ) {
+        FinancialConnection connection = new FinancialConnection();
+        connection.userId = userId;
+        connection.financialInstitutionId = financialInstitutionId;
+        connection.provider = provider;
+        connection.externalId = externalId;
+        connection.status = FinancialConnectionStatus.ACTIVE;
+        connection.syncStatus = SyncStatus.PENDING;
+        connection.connectedAt = LocalDateTime.now();
+        return connection;
+    }
+
+    public SyncStatus getSyncStatus() {
+        return syncStatus;
+    }
 
     public UUID getId() {
         return id;
+    }
+
+    public void setSyncStatus(SyncStatus syncStatus) {
+        this.syncStatus = syncStatus;
     }
 
     public void setId(UUID id) {
@@ -35,12 +67,28 @@ public class FinancialConnection {
         this.userId = userId;
     }
 
-    public String getInstitutionName() {
-        return institutionName;
+    public LocalDateTime getConnectedAt() {
+        return connectedAt;
     }
 
-    public void setInstitutionName(String institutionName) {
-        this.institutionName = institutionName;
+    public void setConnectedAt(LocalDateTime connectedAt) {
+        this.connectedAt = connectedAt;
+    }
+
+    public LocalDateTime getLastSyncedAt() {
+        return lastSyncedAt;
+    }
+
+    public void setLastSyncedAt(LocalDateTime lastSyncedAt) {
+        this.lastSyncedAt = lastSyncedAt;
+    }
+
+    public UUID getFinancialInstitutionId() {
+        return financialInstitutionId;
+    }
+
+    public void setFinancialInstitutionId(UUID financialInstitutionId) {
+        this.financialInstitutionId = financialInstitutionId;
     }
 
     public String getProvider() {
@@ -67,19 +115,20 @@ public class FinancialConnection {
         this.status = status;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    public void startSync() {
+        this.syncStatus = SyncStatus.SYNCING;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    public void completeSync() {
+        this.syncStatus = SyncStatus.COMPLETED;
     }
 
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
+    public void failSync() {
+        this.syncStatus = SyncStatus.ERROR;
+
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
+    public void updateStatus(FinancialConnectionStatus status) {
+        this.status = status;
     }
 }

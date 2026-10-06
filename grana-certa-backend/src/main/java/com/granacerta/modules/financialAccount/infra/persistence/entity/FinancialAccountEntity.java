@@ -17,7 +17,12 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "grana_certa_financial_account")
+@Table(name = "grana_certa_financial_account",uniqueConstraints = {
+        @UniqueConstraint(
+                name = "uk_financial_account_external_id",
+                columnNames = "external_id"
+        )
+})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -26,7 +31,7 @@ import java.util.UUID;
 public class FinancialAccountEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(name = "user_id", nullable = false)
@@ -67,4 +72,7 @@ public class FinancialAccountEntity {
     @Column(name = "updated_at", nullable = false)
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    private Integer closingDay;
+    private Integer dueDay;
 }

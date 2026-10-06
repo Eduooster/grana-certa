@@ -11,20 +11,11 @@ import org.mapstruct.Mapping;
 public interface FinancialProfileEntityMapper {
 
 
-     @Mapping(target = "userId", source = "user.id")
+
     FinancialProfileEntity toEntity(FinancialProfile financialProfile);
 
-    @Mapping(target = "user", ignore = true)
     FinancialProfile toDomain(FinancialProfileEntity entity);
 
-    default FinancialProfile toDomain(
-            FinancialProfileEntity entity,
-            User user
-    ) {
-        FinancialProfile financialProfile = toDomain(entity);
-        financialProfile.setUser(user);
-        return financialProfile;
-    }
 
 
 }

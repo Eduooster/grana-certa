@@ -1,6 +1,7 @@
 package com.granacerta.modules.transaction.web.mapper;
 
 import com.granacerta.modules.transaction.application.usecase.*;
+import com.granacerta.modules.transaction.orchestrator.CreateTransactionOperationCommand;
 import com.granacerta.modules.transaction.web.dto.CreateTransactionRequest;
 import com.granacerta.modules.transaction.web.dto.CreateTransactionResponse;
 import com.granacerta.modules.transaction.web.dto.GetTransactionResponse;
@@ -16,9 +17,11 @@ public interface TransactionWebMapper {
 
 
     CreateTransactionCommand toCreateCommand(CreateTransactionRequest request, UUID userId);
+    CreateTransactionOperationCommand toCreateOperationCommand(CreateTransactionRequest request, UUID userId);
 
     CreateTransactionResponse toResponse(CreateTransactionResult result);
     GetTransactionsCommand toCommand(GetTransactionsRequest request, UUID userId);
+    UpdateTransactionCommand toCommand(UpdateTransactionRequest request, UUID userId);
     GetTransactionResponse toResponse(GetTransactionResult result);
 
 

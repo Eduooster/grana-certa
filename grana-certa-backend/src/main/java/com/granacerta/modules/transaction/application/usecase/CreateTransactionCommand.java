@@ -1,5 +1,6 @@
 package com.granacerta.modules.transaction.application.usecase;
 
+import com.granacerta.modules.recurrence.RecurrenceData;
 import com.granacerta.modules.transaction.domain.enums.TransactionType;
 
 import java.math.BigDecimal;
@@ -13,6 +14,7 @@ public record CreateTransactionCommand(
         TransactionType type,
         BigDecimal amount,
         LocalDate transactionDate,
-        String description
+        String description,
+        UUID recurrenceId
 ) {
 }

@@ -1,6 +1,8 @@
 package com.granacerta.modules.transaction.web.controller;
 
 import com.granacerta.modules.transaction.application.usecase.*;
+import com.granacerta.modules.transaction.orchestrator.CreateTransactionOperationCommand;
+import com.granacerta.modules.transaction.orchestrator.CreateTransactionOrchestrator;
 import com.granacerta.modules.transaction.web.dto.CreateTransactionRequest;
 import com.granacerta.modules.transaction.web.dto.CreateTransactionResponse;
 import com.granacerta.modules.transaction.web.dto.GetTransactionResponse;
@@ -22,7 +24,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class TransactionController {
 
-    private final CreateTransactionUseCase createTransactionUseCase;
+    private final CreateTransactionOrchestrator createTransactionOrchestrator;
     private final GetTransactionsUseCase getTransactionsUseCase;
     private final UpdateTransactionUseCase updateTransactionUseCase;
 
@@ -37,11 +39,11 @@ public class TransactionController {
 
         UUID userId = customUserDetails.getUserId();
 
-        CreateTransactionCommand command =
-                transactionWebMapper.toCreateCommand(request, userId);
+        CreateTransactionOperationCommand command =
+                transactionWebMapper.toCreateOperationCommand(request, userId);
 
         CreateTransactionResult result =
-                createTransactionUseCase.execute(command);
+                createTransactionOrchestrator.execute(command);
 
         CreateTransactionResponse response =
                 transactionWebMapper.toResponse(result);
@@ -91,15 +93,16 @@ public class TransactionController {
     }
 
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<Void> update(
             @PathVariable UUID id,
-            @Valid @RequestBody UpdateTransactionRequest request,@AuthenticationPrincipal CustomUserDetails customUserDetails
+            @RequestBody UpdateTransactionRequest request
     ) {
-        UUID userId = customUserDetails.getUserId();
+        UpdateTransactionCommand command = transactionWebMapper.toCommand(
 
-        UpdateTransactionCommand command =
-                transactionWebMapper.toCommand(request, id, userId);
+                request,
+                id
+        );
 
         updateTransactionUseCase.execute(command);
 

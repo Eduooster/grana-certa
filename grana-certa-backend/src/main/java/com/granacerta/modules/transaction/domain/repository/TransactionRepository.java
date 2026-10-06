@@ -18,4 +18,10 @@ public interface TransactionRepository {
 
 
     Optional<Transaction> findByIdAndUserIdAndActiveTrue(UUID transactionId, UUID userId);
+
+    Optional<Transaction> findByExternalId(String externalId);
+
+
+
+    boolean existsByAccountIdAndExternalId(UUID accountId, String externalId);
 }

@@ -28,7 +28,7 @@ import java.util.UUID;
 @Builder
 public class FinancialProfileEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
 

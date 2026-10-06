@@ -23,7 +23,7 @@ public class CreateFinancialProfileUseCase {
         User user = userRepository.findByIdAndActiveTrue(command.userId()).orElseThrow(()->new UserNotFoundException(   "User not found"));
 
         FinancialProfile financialProfile = FinancialProfile.create(
-                user, command.objective(),
+                user.getId(), command.objective(),
                 command.controlLevel(),
                 command.mainDifficulty(),
                 command.preferredView(),

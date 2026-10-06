@@ -1,8 +1,12 @@
 package com.granacerta.modules.financialAccount.domain.entity;
 
+import com.granacerta.modules.financialAccount.application.usecase.CreateFinancialAccountCommand;
 import com.granacerta.modules.financialAccount.domain.enums.FinancialAccountSource;
 import com.granacerta.modules.financialAccount.domain.enums.FinancialAccountStatus;
 import com.granacerta.modules.financialAccount.domain.enums.FinancialAccountType;
+import com.granacerta.modules.financialConnection.domain.entity.FinancialConnection;
+import com.granacerta.modules.transaction.domain.entity.Transaction;
+import com.granacerta.modules.transaction.domain.enums.TransactionType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -23,8 +27,11 @@ public class FinancialAccount {
     private String externalId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Integer closingDay;
+    private Integer dueDay;
+    public FinancialAccount() { }
 
-    public FinancialAccount(UUID id, UUID userId, UUID connectionId, String name, FinancialAccountType type, BigDecimal balance, BigDecimal initialBalance, FinancialAccountStatus status, FinancialAccountSource source, String externalId, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public FinancialAccount(UUID id, UUID userId, UUID connectionId, String name, FinancialAccountType type, BigDecimal balance, BigDecimal initialBalance, FinancialAccountStatus status, FinancialAccountSource source, String externalId, LocalDateTime createdAt, LocalDateTime updatedAt, Integer closingDay, Integer dueDay) {
         this.id = id;
         this.userId = userId;
         this.connectionId = connectionId;
@@ -37,6 +44,8 @@ public class FinancialAccount {
         this.externalId = externalId;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.closingDay = closingDay;
+        this.dueDay = dueDay;
     }
 
     public static FinancialAccount createDefaultWallet(UUID userId) {
@@ -52,8 +61,85 @@ public class FinancialAccount {
                 FinancialAccountSource.MANUAL,
                 null,
                 null,
-                null
+                null,null,null
         );
+    }
+
+    public static FinancialAccount create(CreateFinancialAccountCommand command) {
+        FinancialAccount account = new FinancialAccount();
+
+        account.userId = command.userId();
+        account.name = command.name();
+        account.balance = command.balance();
+        account.initialBalance = command.balance();
+        account.source   = FinancialAccountSource.MANUAL;
+        account.type = command.type();
+
+        account.type = command.type();
+        account.status = FinancialAccountStatus.ACTIVE;
+        account.createdAt = LocalDateTime.now();
+        account.updatedAt = null;
+
+        return account;
+    }
+
+    public static FinancialAccount createCreditCardAccount(CreateFinancialAccountCommand command) {
+        FinancialAccount account = new FinancialAccount();
+
+        account.userId = command.userId();
+        account.name = command.name();
+        account.balance = command.balance();
+        account.initialBalance = command.balance();
+        account.source   = FinancialAccountSource.MANUAL;
+        account.type = command.type();
+
+        account.type = command.type();
+        account.status = FinancialAccountStatus.ACTIVE;
+        account.createdAt = LocalDateTime.now();
+        account.updatedAt = null;
+        account.closingDay = command.closingDay();
+        account.dueDay = command.dueDay();
+
+        return account;
+    }
+
+    public static FinancialAccount createFromConnection(FinancialConnection connection, String name, FinancialAccountType type, BigDecimal balance, String externalId) {
+
+        FinancialAccount account = new FinancialAccount();
+        account.userId = connection.getUserId();
+        account.setConnectionId(connection.getId());
+        account.name = name;
+        account.balance = balance;
+        account.externalId = externalId;
+        account.type = type;
+        account.status = FinancialAccountStatus.ACTIVE;
+        account.initialBalance = balance;
+        account.updatedAt = LocalDateTime.now();
+        account.source   = FinancialAccountSource.OPEN_FINANCE;
+
+        return account;
+
+
+
+    }
+
+
+    public void applyDebit(BigDecimal amount) {
+        this.balance = this.balance.subtract(amount);
+    }
+
+    public void applyCredit(BigDecimal amount) {
+        this.balance = this.balance.add(amount);
+    }
+
+    public void applyTransaction(Transaction transaction) {
+        if (transaction.getType().equals(TransactionType.INCOME)) {
+            this.balance = this.balance.add(transaction.getAmount());
+        }
+
+        if (transaction.getType().equals(TransactionType.EXPENSE)) {
+            this.balance = this.balance.subtract(transaction.getAmount());
+        }
     }
 
     public UUID getId() {
@@ -99,6 +185,22 @@ public class FinancialAccount {
 
     public BigDecimal getInitialBalance() {
         return initialBalance;
+    }
+
+    public Integer getClosingDay() {
+        return closingDay;
+    }
+
+    public void setClosingDay(Integer closingDay) {
+        this.closingDay = closingDay;
+    }
+
+    public Integer getDueDay() {
+        return dueDay;
+    }
+
+    public void setDueDay(Integer dueDay) {
+        this.dueDay = dueDay;
     }
 
     public void setInitialBalance(BigDecimal initialBalance) {

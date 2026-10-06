@@ -4,7 +4,9 @@ import com.granacerta.modules.category.domain.enums.CategoryStatus;
 import com.granacerta.modules.category.domain.exception.CategoryNotFoundException;
 import com.granacerta.modules.category.domain.repository.CategoryRepository;
 import com.granacerta.modules.transaction.domain.entity.Transaction;
+import com.granacerta.modules.transaction.domain.enums.TransactionSource;
 import com.granacerta.modules.transaction.domain.exception.TransactionNotFoundException;
+import com.granacerta.modules.transaction.domain.exception.TransactionUpdateNotAllowedException;
 import com.granacerta.modules.transaction.domain.repository.TransactionRepository;
 
 public class UpdateTransactionUseCase {
@@ -33,6 +35,9 @@ public class UpdateTransactionUseCase {
                                 "Transaction not found"
                         )
                 );
+        if (transaction.getSource() != TransactionSource.MANUAL) {
+            throw new TransactionUpdateNotAllowedException("Transaction source not allowed");
+        }
 
         if (command.categoryId() != null) {
             validateCategory(command);

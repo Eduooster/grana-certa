@@ -27,8 +27,7 @@ public class FinancialProfileImpl implements FinancialProfileRepository {
                 financialProfileJpaRepository.save(entity);
 
         return financialProfileEntityMapper.toDomain(
-                savedEntity,
-                financialProfile.getUser()
+                savedEntity
         );
 
 

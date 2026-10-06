@@ -38,4 +38,18 @@ public class TransactionRepositoryImpl implements TransactionRepository {
                 .findByIdAndUserIdAndActiveTrue(transactionId,userId)
                 .map(transactionEntityMapper::toDomain);
     }
+
+    @Override
+    public Optional<Transaction> findByExternalId(String externalId) {
+        return jpaRepository
+                .findByExternalId(externalId)
+                .map(transactionEntityMapper::toDomain);
+    }
+
+    @Override
+    public boolean existsByAccountIdAndExternalId(UUID accountId, String externalId) {
+        return jpaRepository.existsByAccountIdAndExternalId(accountId,externalId);
+    }
+
+
 }

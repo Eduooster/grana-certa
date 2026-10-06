@@ -35,6 +35,15 @@ import java.util.UUID;
                 @Index(name = "idx_transaction_invoice_id", columnList = "invoice_id"),
                 @Index(name = "idx_transaction_transfer_id", columnList = "transfer_id"),
                 @Index(name = "idx_transaction_recurrence_id", columnList = "recurrence_id")
+        },
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_transaction_account_external_id",
+                        columnNames = {
+                                "account_id",
+                                "external_id"
+                        }
+                )
         }
 )
 public class TransactionEntity {

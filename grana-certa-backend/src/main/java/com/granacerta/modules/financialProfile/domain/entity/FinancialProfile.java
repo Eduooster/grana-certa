@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public class FinancialProfile {
     private UUID id;
-    private User user;
+    private UUID userId;
     private Objective objective;
     private ControlLevel controlLevel;
     private MainDifficulty mainDifficulty;
@@ -25,9 +25,9 @@ public class FinancialProfile {
 
 
 
-    public static FinancialProfile create(User user, Objective objective, ControlLevel controlLevel, MainDifficulty mainDifficulty, PreferredView preferredView,BigDecimal monthlyIncome) {
+    public static FinancialProfile create(UUID userId, Objective objective, ControlLevel controlLevel, MainDifficulty mainDifficulty, PreferredView preferredView,BigDecimal monthlyIncome) {
         FinancialProfile financialProfile = new FinancialProfile();
-        financialProfile.user = user;
+        financialProfile.userId = userId    ;
         financialProfile.objective = objective;
         financialProfile.controlLevel = controlLevel ;
         financialProfile.mainDifficulty = mainDifficulty;
@@ -87,12 +87,12 @@ public class FinancialProfile {
         this.id = id;
     }
 
-    public User getUser() {
-        return user;
+    public UUID getUserId() {
+        return userId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserId(UUID userId) {
+        this.userId = userId;
     }
 
     public Objective getObjective() {
@@ -148,11 +148,11 @@ public class FinancialProfile {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         FinancialProfile that = (FinancialProfile) o;
-        return Objects.equals(user.getId(), that.user.getId());
+        return Objects.equals(userId, that.userId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(user.getId());
+        return Objects.hash(userId);
     }
 }

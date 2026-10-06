@@ -29,6 +29,6 @@ public class DeleteTransactionUseCase {
                 );
 
         transaction.deactivate();
-        transactionRepository.save(transaction);    
+        transactionRepository.save(transaction);
     }
 }

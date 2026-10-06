@@ -1,5 +1,7 @@
 package com.granacerta.modules.transaction.domain.entity;
 
+import com.granacerta.modules.financialAccount.domain.entity.FinancialAccount;
+import com.granacerta.modules.recurrence.application.usecase.CreateRecurrenceCommand;
 import com.granacerta.modules.transaction.application.usecase.CreateTransactionCommand;
 import com.granacerta.modules.transaction.application.usecase.UpdateTransactionCommand;
 import com.granacerta.modules.transaction.domain.enums.TransactionSource;
@@ -40,6 +42,8 @@ public class Transaction {
         transaction.transactionDate = command.transactionDate();
         transaction.description = command.description();
 
+
+
         transaction.source = TransactionSource.MANUAL;
         transaction.externalId = null;
 
@@ -48,6 +52,125 @@ public class Transaction {
 
         return transaction;
     }
+
+
+
+
+    public static Transaction createTransferTransaction(
+            UUID userId,
+            UUID accountId,
+            UUID transferId,
+            TransactionType type,
+            BigDecimal amount,
+            LocalDate transactionDate,
+            String description
+    ) {
+        Transaction transaction = new Transaction();
+
+        transaction.userId = userId;
+        transaction.accountId = accountId;
+        transaction.transferId = transferId;
+        transaction.type = type;
+        transaction.amount = amount;
+        transaction.transactionDate = transactionDate;
+        transaction.description = description;
+
+        transaction.categoryId = null;
+        transaction.invoiceId = null;
+        transaction.recurrenceId = null;
+
+        transaction.source = TransactionSource.MANUAL;
+        transaction.externalId = null;
+
+        transaction.createdAt = LocalDateTime.now();
+        transaction.updatedAt = null;
+        transaction.active = true;
+
+        return transaction;
+    }
+
+    public static Transaction createInvoiceTransaction(
+            UUID userId,
+            UUID accountId,
+            UUID categoryId,
+            TransactionType type,
+            BigDecimal amount,
+            LocalDate transactionDate,
+            String description,
+            UUID invoiceId
+    ) {
+        Transaction transaction = new Transaction();
+
+        transaction.userId = userId;
+        transaction.accountId = accountId;
+        transaction.categoryId = categoryId;
+        transaction.type = type;
+        transaction.amount = amount;
+        transaction.transactionDate = transactionDate;
+        transaction.description = description;
+
+        transaction.source = TransactionSource.MANUAL;
+        transaction.externalId = null;
+        transaction.invoiceId = invoiceId;
+
+        transaction.createdAt = LocalDateTime.now();
+        transaction.updatedAt = null;
+
+        return transaction;
+    }
+    public static Transaction createRecurrenceTransaction(
+           CreateTransactionCommand command
+    ) {
+        Transaction transaction = new Transaction();
+
+        transaction.userId = command.userId();
+        transaction.accountId = command.accountId();
+        transaction.categoryId = command.categoryId();
+        transaction.type = command.type();
+        transaction.amount = command.amount();
+        transaction.transactionDate = command.transactionDate();
+        transaction.description = command.description();
+        transaction.recurrenceId = command.recurrenceId();
+
+
+
+        transaction.source = TransactionSource.MANUAL;
+        transaction.externalId = null;
+
+        transaction.createdAt = LocalDateTime.now();
+        transaction.updatedAt = null;
+
+
+        return transaction;
+    }
+
+    public static Transaction createFromProvider(
+            UUID userId,
+            UUID accountId,
+            String externalId,
+            TransactionType type,
+            BigDecimal amount,
+            LocalDate transactionDate,
+            String description
+    ) {
+        Transaction transaction = new Transaction();
+
+
+        transaction.userId = userId;
+        transaction.accountId = accountId;
+        transaction.externalId = externalId;
+        transaction.type = type;
+        transaction.amount = amount;
+        transaction.transactionDate = transactionDate;
+        transaction.description = description;
+        transaction.source = TransactionSource.OPEN_FINANCE;
+        transaction.createdAt = LocalDateTime.now();
+        transaction.updatedAt = LocalDateTime.now();
+        transaction.active = true;
+
+        return transaction;
+    }
+
 
     public boolean isActive() {
         return active;
@@ -191,7 +314,27 @@ public class Transaction {
     }
 
     public void update(UpdateTransactionCommand command) {
+        if (command.categoryId() != null) {
+            this.categoryId = command.categoryId();
+        }
 
+        if (command.amount() != null) {
+            this.amount = command.amount();
+        }
+
+        if (command.type() != null) {
+            this.type = command.type();
+        }
+
+        if (command.transactionDate() != null) {
+            this.transactionDate = command.transactionDate();
+        }
+
+        if (command.description() != null) {
+            this.description = command.description();
+        }
+
+        this.updatedAt = LocalDateTime.now();
     }
 
     public void deactivate() {

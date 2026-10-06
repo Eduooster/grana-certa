@@ -1,42 +1,83 @@
 package com.granacerta.modules.invoice.domain.entity;
 
-import java.math.BigDecimal;
+import com.granacerta.modules.invoice.application.usecase.CreateInvoiceCommand;
+import com.granacerta.modules.invoice.domain.enums.InvoiceStatus;
+
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.Objects;
+import java.util.UUID;
 
 public class Invoice {
-    private Long id;
-    private Long accountId;
-    private String referenceMonth;
+    private UUID id;
+
+    private UUID accountId;
+
+    private YearMonth referenceMonth;
+
     private LocalDate closingDate;
+    private LocalDate openingDate;
+
     private LocalDate dueDate;
-    private BigDecimal totalAmount;
-    private String status;
+
+
+
+    private InvoiceStatus status;
+
     private LocalDateTime createdAt;
+
     private LocalDateTime updatedAt;
 
-    public Long getId() {
-        return id;
+    public static Invoice create(CreateInvoiceCommand command) {
+
+        Invoice invoice = new Invoice();
+
+
+        invoice.accountId = command.accountId();
+        invoice.referenceMonth = command.referenceMonth();
+        invoice.closingDate = command.closingDate();
+        invoice.dueDate = command.dueDate();
+        invoice.openingDate = command.openingDate();
+
+        invoice.status = InvoiceStatus.OPEN;
+        invoice.createdAt = LocalDateTime.now();
+        invoice.updatedAt = LocalDateTime.now();
+
+        return invoice;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getAccountId() {
+    public UUID getAccountId() {
         return accountId;
     }
 
-    public void setAccountId(Long accountId) {
+    public void setAccountId(UUID accountId) {
         this.accountId = accountId;
     }
 
-    public String getReferenceMonth() {
+    public UUID getId() {
+        return id;
+    }
+
+    public LocalDate getOpeningDate() {
+        return openingDate;
+    }
+
+    public void setOpeningDate(LocalDate openingDate) {
+        this.openingDate = openingDate;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+
+    public YearMonth getReferenceMonth() {
         return referenceMonth;
     }
 
-    public void setReferenceMonth(String referenceMonth) {
+    public void setReferenceMonth(YearMonth referenceMonth) {
         this.referenceMonth = referenceMonth;
     }
 
@@ -56,19 +97,13 @@ public class Invoice {
         this.dueDate = dueDate;
     }
 
-    public BigDecimal getTotalAmount() {
-        return totalAmount;
-    }
 
-    public void setTotalAmount(BigDecimal totalAmount) {
-        this.totalAmount = totalAmount;
-    }
 
-    public String getStatus() {
+    public InvoiceStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(InvoiceStatus status) {
         this.status = status;
     }
 

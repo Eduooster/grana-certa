@@ -16,4 +16,8 @@ public interface TransactionJpaRepository extends JpaRepository<TransactionEntit
 
 
     Optional<TransactionEntity> findByIdAndUserIdAndActiveTrue(UUID transactionId, UUID userId);
+
+    Optional<TransactionEntity> findByExternalId(String externalId);
+
+    boolean existsByAccountIdAndExternalId(UUID accountId, String externalId);
 }

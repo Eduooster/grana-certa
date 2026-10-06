@@ -5,66 +5,110 @@ import com.granacerta.modules.category.domain.exception.CategoryNotFoundExceptio
 import com.granacerta.modules.category.domain.repository.CategoryRepository;
 import com.granacerta.modules.financialAccount.domain.entity.FinancialAccount;
 import com.granacerta.modules.financialAccount.domain.enums.FinancialAccountStatus;
+import com.granacerta.modules.financialAccount.domain.enums.FinancialAccountType;
 import com.granacerta.modules.financialAccount.domain.exception.FinancialAccountNotFoundException;
 
 import com.granacerta.modules.financialAccount.domain.repository.FinancialAccountRepository;
+import com.granacerta.modules.invoice.domain.entity.Invoice;
+import com.granacerta.modules.invoice.domain.resolve.InvoiceResolver;
 import com.granacerta.modules.transaction.domain.entity.Transaction;
 import com.granacerta.modules.transaction.domain.repository.TransactionRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.security.auth.login.AccountNotFoundException;
-import java.util.Optional;
 
-@Slf4j
+
+
+
+@Transactional
 public class CreateTransactionUseCase {
 
-
-
-
-
-    private final TransactionRepository transactionRepository;
-
-    private final CategoryRepository categoryRepository;
     private final FinancialAccountRepository financialAccountRepository;
+    private final CategoryRepository categoryRepository;
+    private final TransactionRepository transactionRepository;
+    private final InvoiceResolver invoiceResolver;
 
-    public CreateTransactionUseCase(TransactionRepository transactionRepository, CategoryRepository categoryRepository, FinancialAccountRepository financialAccountRepository) {
-        this.transactionRepository = transactionRepository;
-        this.categoryRepository = categoryRepository;
+    public CreateTransactionUseCase(FinancialAccountRepository financialAccountRepository, CategoryRepository categoryRepository, TransactionRepository transactionRepository, InvoiceResolver invoiceResolver) {
         this.financialAccountRepository = financialAccountRepository;
+        this.categoryRepository = categoryRepository;
+        this.transactionRepository = transactionRepository;
+        this.invoiceResolver = invoiceResolver;
     }
 
     public CreateTransactionResult execute(CreateTransactionCommand command) {
 
-        validateFinancialAccount(command);
+        FinancialAccount account = validateFinancialAccount(command);
 
         if (command.categoryId() != null) {
             validateCategory(command);
         }
 
-       Transaction transaction = Transaction.createManualTransaction(command);
 
-        log.info("is active? create " + transaction.isActive());
+        Transaction transaction = createTransaction(account, command);
 
-        Transaction savedTransaction =
-                transactionRepository.save(transaction);
 
-        log.info("saved active?  " + savedTransaction.isActive());
+        account.applyTransaction(transaction);
 
-        return new CreateTransactionResult(
-                savedTransaction.getId(),
-                savedTransaction.getUserId(),
-                savedTransaction.getAccountId(),
-                savedTransaction.getCategoryId(),
-                savedTransaction.getType(),
-                savedTransaction.getAmount(),
-                savedTransaction.getTransactionDate(),
-                savedTransaction.getDescription(),
-                savedTransaction.getSource(),
-                savedTransaction.getCreatedAt()
+        Transaction savedTransaction = transactionRepository.save(transaction);
+        financialAccountRepository.save(account);
+
+
+        return buildResult(savedTransaction);
+    }
+
+
+
+    private Transaction createTransaction(FinancialAccount account, CreateTransactionCommand command) {
+        if (FinancialAccountType.CREDIT.equals(account.getType())) {
+            return createCreditCardTransaction(account, command);
+        }
+
+        if (command.recurrenceId() != null) {
+            return Transaction.createRecurrenceTransaction(command);
+        }
+
+        return Transaction.createManualTransaction(command);
+    }
+
+    private Transaction createCreditCardTransaction(FinancialAccount account, CreateTransactionCommand command) {
+        Invoice invoice = invoiceResolver.resolve(
+                account,
+                command.transactionDate()
+        );
+
+        return Transaction.createInvoiceTransaction(
+                command.userId(),
+                command.accountId(),
+                command.categoryId(),
+                command.type(),
+                command.amount(),
+                command.transactionDate(),
+                command.description(),
+                invoice.getId()
         );
     }
-    private void validateFinancialAccount(CreateTransactionCommand command) {
-        financialAccountRepository
+
+    private CreateTransactionResult buildResult(Transaction transaction) {
+        return new CreateTransactionResult(
+                transaction.getId(),
+                transaction.getUserId(),
+                transaction.getAccountId(),
+                transaction.getCategoryId(),
+                transaction.getType(),
+                transaction.getAmount(),
+                transaction.getTransactionDate(),
+                transaction.getDescription(),
+                transaction.getSource(),
+                transaction.getCreatedAt()
+        );
+    }
+
+
+
+    private FinancialAccount validateFinancialAccount(
+            CreateTransactionCommand command
+    ) {
+        return financialAccountRepository
                 .findByIdAndUserIdAndActiveTrue(
                         command.accountId(),
                         command.userId(),

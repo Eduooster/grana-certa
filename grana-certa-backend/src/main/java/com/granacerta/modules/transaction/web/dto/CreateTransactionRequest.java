@@ -1,5 +1,6 @@
 package com.granacerta.modules.transaction.web.dto;
 
+import com.granacerta.modules.recurrence.RecurrenceData;
 import com.granacerta.modules.transaction.domain.enums.TransactionType;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -25,6 +26,8 @@ public record CreateTransactionRequest(
         LocalDate transactionDate,
 
         @Size(max = 255)
-        String description
+        String description,
+
+        RecurrenceData recurrence
 ) {
 }

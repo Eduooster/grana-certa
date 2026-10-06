@@ -1,6 +1,7 @@
 package com.granacerta.modules.category.domain.entity;
 
 import com.granacerta.modules.category.application.usecase.CreateCategoryCommand;
+import com.granacerta.modules.category.domain.enums.CategorySource;
 import com.granacerta.modules.category.domain.enums.CategoryStatus;
 import com.granacerta.modules.category.domain.enums.CategoryType;
 
@@ -9,15 +10,17 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class Category {
-    private UUID id;
-    private UUID userId;
-    private UUID parentCategoryId;
-    private String name;
-    private CategoryType type;
-    private CategoryStatus status;
+        private UUID id;
+        private UUID userId;
+        private UUID parentCategoryId;
+        private String name;
+        private CategoryType type;
+        private CategoryStatus status;
+          private CategorySource categorySource;
+          private String externalId;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
 
 
     public static Category create(CreateCategoryCommand command) {
