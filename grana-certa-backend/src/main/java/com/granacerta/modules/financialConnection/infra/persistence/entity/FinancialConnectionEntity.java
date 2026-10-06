@@ -1,7 +1,6 @@
 package com.granacerta.modules.financialConnection.infra.persistence.entity;
 
 import com.granacerta.modules.financialConnection.domain.enums.FinancialConnectionStatus;
-import com.granacerta.modules.financialConnection.domain.enums.SyncStatus;
 import com.granacerta.modules.financialInstitution.infra.entity.FinancialInstitutionEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -47,9 +46,7 @@ public class FinancialConnectionEntity {
 
 
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private SyncStatus syncStatus;
+
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

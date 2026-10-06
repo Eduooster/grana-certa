@@ -12,7 +12,9 @@ import com.granacerta.modules.financialConnection.domain.repository.FinancialCon
 import com.granacerta.modules.transaction.domain.entity.Transaction;
 import com.granacerta.modules.transaction.domain.repository.TransactionRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 @Slf4j
 
@@ -34,6 +36,7 @@ public class ProcessTransactionCreatedUseCase {
         this.financialAccountRepository = financialAccountRepository;
     }
 
+    @Transactional
     public void execute(ProcessTransactionCreatedCommand command) {
         log.info("Starting execution of ProcessTransactionCreatedCommand for itemId: {} and accountId: {}",
                 command.itemId(), command.accountId());
@@ -97,6 +100,8 @@ public class ProcessTransactionCreatedUseCase {
             savedCount++;
             log.trace("Successfully saved transaction with externalId: {}", externalTransaction.externalId());
         }
+
+        connection.setLastSyncedAt(LocalDateTime.now());
 
         log.info("Finished execution of ProcessTransactionCreatedCommand. Saved: {}, Skipped (duplicates): {}",
                 savedCount, skippedCount);

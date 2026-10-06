@@ -1,7 +1,7 @@
 package com.granacerta.modules.financialConnection.domain.entity;
 
 import com.granacerta.modules.financialConnection.domain.enums.FinancialConnectionStatus;
-import com.granacerta.modules.financialConnection.domain.enums.SyncStatus;
+
 import com.granacerta.modules.user.domain.entity.User;
 
 import java.time.LocalDateTime;
@@ -17,7 +17,7 @@ public class FinancialConnection {
     private String externalId;
 
     private FinancialConnectionStatus status;
-    private  SyncStatus syncStatus;
+
 
     private LocalDateTime connectedAt;
     private LocalDateTime lastSyncedAt;
@@ -38,22 +38,19 @@ public class FinancialConnection {
         connection.provider = provider;
         connection.externalId = externalId;
         connection.status = FinancialConnectionStatus.ACTIVE;
-        connection.syncStatus = SyncStatus.PENDING;
+
         connection.connectedAt = LocalDateTime.now();
+        connection.setLastSyncedAt(LocalDateTime.now());
         return connection;
     }
 
-    public SyncStatus getSyncStatus() {
-        return syncStatus;
-    }
+
 
     public UUID getId() {
         return id;
     }
 
-    public void setSyncStatus(SyncStatus syncStatus) {
-        this.syncStatus = syncStatus;
-    }
+
 
     public void setId(UUID id) {
         this.id = id;
@@ -115,18 +112,6 @@ public class FinancialConnection {
         this.status = status;
     }
 
-    public void startSync() {
-        this.syncStatus = SyncStatus.SYNCING;
-    }
-
-    public void completeSync() {
-        this.syncStatus = SyncStatus.COMPLETED;
-    }
-
-    public void failSync() {
-        this.syncStatus = SyncStatus.ERROR;
-
-    }
 
     public void updateStatus(FinancialConnectionStatus status) {
         this.status = status;

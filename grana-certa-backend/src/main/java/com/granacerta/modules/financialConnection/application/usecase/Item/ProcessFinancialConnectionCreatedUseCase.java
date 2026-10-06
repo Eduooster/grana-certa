@@ -16,13 +16,13 @@ public class ProcessFinancialConnectionCreatedUseCase {
     private final FinancialConnectionApplicationService financialConnectionService;
     private final FinancialConnectionProviderGateway financialConnectionProviderGateway;
 
-    private final SyncFinancialConnectionUseCase syncFinancialConnectionUseCase;
 
-    public ProcessFinancialConnectionCreatedUseCase(FinancialConnectionApplicationService financialConnectionService, FinancialConnectionProviderGateway financialConnectionProviderGateway, SyncFinancialConnectionUseCase syncFinancialConnectionUseCase) {
+
+    public ProcessFinancialConnectionCreatedUseCase(FinancialConnectionApplicationService financialConnectionService, FinancialConnectionProviderGateway financialConnectionProviderGateway) {
         this.financialConnectionService = financialConnectionService;
         this.financialConnectionProviderGateway = financialConnectionProviderGateway;
 
-        this.syncFinancialConnectionUseCase = syncFinancialConnectionUseCase;
+
     }
 
     @Transactional
@@ -35,7 +35,7 @@ public class ProcessFinancialConnectionCreatedUseCase {
                 externalConnection.userId()
         );
 
-        FinancialConnection connection = financialConnectionService.getOrCreate(
+      financialConnectionService.getOrCreate(
                 externalConnection.externalId(),
                 userId,
                 externalConnection.connectorId(),
@@ -49,9 +49,7 @@ public class ProcessFinancialConnectionCreatedUseCase {
             return;
         }
 
-        syncFinancialConnectionUseCase.execute(
-                connection.getId()
-        );
+
 
     }
 }
