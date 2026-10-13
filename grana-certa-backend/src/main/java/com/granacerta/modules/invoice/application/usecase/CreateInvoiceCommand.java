@@ -11,6 +11,7 @@ public record CreateInvoiceCommand(
         YearMonth referenceMonth,
         LocalDate openingDate,
         LocalDate closingDate,
-        LocalDate dueDate
+        LocalDate dueDate,
+        BigDecimal totalAmount
 ) {
 }

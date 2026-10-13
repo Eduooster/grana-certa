@@ -2,6 +2,7 @@ package com.granacerta.modules.financialAccount.domain.repository;
 
 import com.granacerta.modules.financialAccount.domain.entity.FinancialAccount;
 import com.granacerta.modules.financialAccount.domain.enums.FinancialAccountStatus;
+import com.granacerta.modules.financialAccount.domain.enums.FinancialAccountType;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
@@ -16,6 +17,8 @@ public interface FinancialAccountRepository  {
             );
 
     List<FinancialAccount> findAllByConnectionId(UUID connectionId);
+
+    List<FinancialAccount> findAllByConnectionIdAndFinancialAccountType(UUID connectionId, FinancialAccountType financialAccountType);
 
     Optional<FinancialAccount> findByExternalId(String externalId);
 }

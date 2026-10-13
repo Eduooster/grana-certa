@@ -2,6 +2,7 @@ package com.granacerta.modules.financialAccount.infra.persistence.repository;
 
 import com.granacerta.modules.financialAccount.domain.entity.FinancialAccount;
 import com.granacerta.modules.financialAccount.domain.enums.FinancialAccountStatus;
+import com.granacerta.modules.financialAccount.domain.enums.FinancialAccountType;
 import com.granacerta.modules.financialAccount.infra.persistence.entity.FinancialAccountEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -16,4 +17,6 @@ public interface FinancialAccountJpaRepository extends JpaRepository<FinancialAc
     List<FinancialAccountEntity> findAllByConnectionId(UUID connectionId);
 
     Optional<FinancialAccountEntity> findByExternalId(String externalId);
+
+    List<FinancialAccountEntity> findAllByConnectionIdAndType(UUID connectionId, FinancialAccountType financialAccountType);
 }

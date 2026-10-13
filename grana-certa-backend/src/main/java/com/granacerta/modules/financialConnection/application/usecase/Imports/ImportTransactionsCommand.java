@@ -1,4 +1,4 @@
-package com.granacerta.modules.financialConnection.application.usecase.Item;
+package com.granacerta.modules.financialConnection.application.usecase.Imports;
 
 import java.util.List;
 

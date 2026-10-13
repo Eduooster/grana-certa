@@ -75,4 +75,6 @@ public class FinancialAccountEntity {
 
     private Integer closingDay;
     private Integer dueDay;
+    private BigDecimal creditLimit;
+    private BigDecimal availableCreditLimit;
 }

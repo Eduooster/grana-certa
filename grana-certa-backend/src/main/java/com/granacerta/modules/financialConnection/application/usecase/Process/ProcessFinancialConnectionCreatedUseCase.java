@@ -1,6 +1,5 @@
-package com.granacerta.modules.financialConnection.application.usecase.Item;
+package com.granacerta.modules.financialConnection.application.usecase.Process;
 
-import ai.pluggy.client.response.ItemStatus;
 import com.granacerta.modules.financialConnection.application.gateway.FinancialConnectionProviderGateway;
 import com.granacerta.modules.financialConnection.application.service.FinancialConnectionApplicationService;
 import com.granacerta.modules.financialConnection.domain.entity.FinancialConnection;
@@ -18,9 +17,12 @@ public class ProcessFinancialConnectionCreatedUseCase {
 
 
 
+
+
     public ProcessFinancialConnectionCreatedUseCase(FinancialConnectionApplicationService financialConnectionService, FinancialConnectionProviderGateway financialConnectionProviderGateway) {
         this.financialConnectionService = financialConnectionService;
         this.financialConnectionProviderGateway = financialConnectionProviderGateway;
+
 
 
     }
@@ -28,26 +30,36 @@ public class ProcessFinancialConnectionCreatedUseCase {
     @Transactional
     public void execute(String externalId) {
 
-        ExternalFinancialConnection externalConnection =
-                financialConnectionProviderGateway.getItemDetails(externalId);
+            ExternalFinancialConnection externalConnection =
+                    financialConnectionProviderGateway.getItemDetails(externalId);
 
-        UUID userId = UUID.fromString(
-                externalConnection.userId()
-        );
+            UUID userId = UUID.fromString(
+                    externalConnection.userId()
+            );
 
-      financialConnectionService.getOrCreate(
-                externalConnection.externalId(),
-                userId,
-                externalConnection.connectorId(),
-                externalConnection.institutionName(),
-                externalConnection.institutionImageUrl(),
-                externalConnection.health(),
-                externalConnection.type()
-        );
 
-        if (externalConnection.status() != ItemStatus.UPDATED){
-            return;
-        }
+
+            //ver se mantem esse mapper aqui, ou mapear no gateway
+
+
+
+
+         FinancialConnection connection= financialConnectionService.getOrCreate(
+                    externalConnection.externalId(),
+                    userId,
+                    externalConnection.connectorId(),
+                    externalConnection.institutionName(),
+                    externalConnection.institutionImageUrl(),
+                    externalConnection.health(),
+                    externalConnection.type(),
+                   externalConnection.connectionExecutionResult()
+
+
+            );
+
+            connection.updateLastSync();
+
+
 
 
 

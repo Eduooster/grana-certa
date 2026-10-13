@@ -1,6 +1,11 @@
 package com.granacerta.modules.financialConnection.domain.enums;
 
 public enum FinancialConnectionStatus {
-    CONNECTED,DISCONNECTED, CONNECTING,
-    EXPIRED,ERROR,ACTIVE,DEACTIVATED
+    CONNECTING,
+    CONNECTED,
+    WAITING_USER_INPUT,
+    WAITING_USER_ACTION,
+    DISCONNECTED,
+    EXPIRED,
+    ERROR
 }

@@ -1,5 +1,6 @@
 package com.granacerta.modules.financialConnection.infra.persistence.entity;
 
+import com.granacerta.modules.financialConnection.domain.enums.ConnectionExecutionResult;
 import com.granacerta.modules.financialConnection.domain.enums.FinancialConnectionStatus;
 import com.granacerta.modules.financialInstitution.infra.entity.FinancialInstitutionEntity;
 import jakarta.persistence.*;
@@ -51,10 +52,17 @@ public class FinancialConnectionEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private FinancialConnectionStatus status;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "execution_status")
+    private ConnectionExecutionResult executionStatus;
 
-    @Column(name = "connected_at", nullable = false)
+
+    @Column(name = "connected_at")
     private LocalDateTime connectedAt;
 
     @Column(name = "last_synced_at")
     private LocalDateTime lastSyncedAt;
+
+    @Column(name = "is_deleted")
+    private Boolean isDeleted;
 }

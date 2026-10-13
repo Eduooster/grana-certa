@@ -1,8 +1,7 @@
 package com.granacerta.modules.financialConnection.infra.persistence.external.pluggy.webhook.handler;
 
-import com.granacerta.modules.financialConnection.application.usecase.Item.HandleItemErrorUseCase;
-import com.granacerta.modules.financialConnection.application.usecase.Item.UpdateConnectionStatusCommand;
-import com.granacerta.modules.financialConnection.application.usecase.Item.UpdateConnectionStatusUseCase;
+import com.granacerta.modules.financialConnection.application.usecase.SyncConnection.UpdateConnectionStatusCommand;
+import com.granacerta.modules.financialConnection.application.usecase.SyncConnection.UpdateConnectionStatusUseCase;
 import com.granacerta.modules.financialConnection.domain.enums.FinancialConnectionStatus;
 import com.granacerta.modules.financialConnection.infra.persistence.external.pluggy.domain.PluggyWebhookCommand;
 import com.granacerta.modules.financialConnection.infra.persistence.external.pluggy.domain.PluggyWebhookEvent;

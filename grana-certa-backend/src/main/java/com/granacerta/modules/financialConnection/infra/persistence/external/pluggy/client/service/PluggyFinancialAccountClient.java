@@ -3,11 +3,15 @@ package com.granacerta.modules.financialConnection.infra.persistence.external.pl
 import ai.pluggy.client.PluggyClient;
 import ai.pluggy.client.response.Account;
 import ai.pluggy.client.response.AccountsResponse;
+import ai.pluggy.client.response.BillsResponse;
 import ai.pluggy.client.response.ErrorResponse;
+import com.granacerta.modules.financialConnection.application.gateway.ExternalInvoice;
 import com.granacerta.modules.financialConnection.application.gateway.FinancialAccountProviderGateway;
 import com.granacerta.modules.financialConnection.domain.entity.FinancialConnection;
+import com.granacerta.modules.financialConnection.infra.persistence.adapter.PluggyBillMapper;
 import com.granacerta.modules.financialConnection.infra.persistence.adapter.PluggyFinancialAccountMapper;
 import com.granacerta.modules.financialConnection.infra.persistence.adapter.PluggyFinancialConnectionMapper;
+
 import com.granacerta.modules.financialConnection.infra.persistence.external.pluggy.client.dto.ExternalFinancialAccount;
 import org.springframework.stereotype.Component;
 import retrofit2.Response;
@@ -23,8 +27,10 @@ public class PluggyFinancialAccountClient implements FinancialAccountProviderGat
     private static final String clientSecret=  System.getenv("PLUGGY_CLIENT_SECRET");
 
     private final PluggyFinancialAccountMapper pluggyFinancialAccountMapper;
+    private final PluggyBillMapper pluggyBillMapper;
 
-    public PluggyFinancialAccountClient(PluggyFinancialConnectionMapper pluggyFinancialConnectionMapper, PluggyFinancialConnectionMapper financialConnectionMapper, PluggyFinancialAccountMapper pluggyFinancialAccountMapper) {
+    public PluggyFinancialAccountClient(PluggyFinancialConnectionMapper pluggyFinancialConnectionMapper, PluggyFinancialConnectionMapper financialConnectionMapper, PluggyFinancialAccountMapper pluggyFinancialAccountMapper, PluggyBillMapper pluggyBillMapper) {
+        this.pluggyBillMapper = pluggyBillMapper;
 
 
         if (clientId == null || clientSecret == null) {
@@ -76,6 +82,50 @@ public class PluggyFinancialAccountClient implements FinancialAccountProviderGat
             throw new RuntimeException(
                     "Falha de integração ao solicitar as contas do item: "
                             + itemId,
+                    e
+            );
+        }
+    }
+
+
+    @Override
+    public List<ExternalInvoice> fetchInvoices(String accountId) {
+
+        Objects.requireNonNull(
+                accountId,
+                "O accountId é obrigatório para buscar as faturas"
+        );
+
+        try {
+
+            Response<BillsResponse> response =
+                    pluggyClient.service()
+                            .getBills(accountId)
+                            .execute();
+
+            if (response.isSuccessful() && response.body() != null) {
+                return pluggyBillMapper
+                        .toExternalInvoices(response.body());
+            }
+
+            ErrorResponse error = pluggyClient.parseError(response);
+
+            String errorMessage =
+                    error != null && error.getMessage() != null
+                            ? error.getMessage()
+                            : "Status HTTP " + response.code();
+
+            throw new RuntimeException(
+                    "Erro na API da Pluggy ao buscar as faturas da conta ("
+                            + accountId
+                            + "): "
+                            + errorMessage
+            );
+
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    "Falha de integração ao solicitar as faturas da conta: "
+                            + accountId,
                     e
             );
         }

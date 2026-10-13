@@ -48,7 +48,9 @@ public class CreateFinancialConnectionUseCase {
                 command.userId(),
                 financialInstitution.getId(),
                "teste",
-                command.itemId()
+                command.itemId(),
+                null
+
         );
 
         return financialConnectionRepository.save(connection).getId();

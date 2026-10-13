@@ -6,6 +6,8 @@ import com.granacerta.modules.authentication.application.usecase.LoginUseCase;
 import com.granacerta.modules.authentication.application.usecase.RegisterUserLocalUseCase;
 import com.granacerta.modules.authentication.domain.repository.UserCredentialRepository;
 import com.granacerta.modules.category.application.usecase.CreateCategoryUseCase;
+import com.granacerta.modules.category.application.usecase.ResolveTransactionCategoryUseCase;
+import com.granacerta.modules.category.domain.TransactionCategoryClassifier;
 import com.granacerta.modules.category.domain.repository.CategoryRepository;
 import com.granacerta.modules.financialAccount.application.usecase.CreateFinancialAccountUseCase;
 import com.granacerta.modules.financialAccount.domain.repository.FinancialAccountRepository;
@@ -15,10 +17,19 @@ import com.granacerta.modules.financialConnection.application.gateway.FinancialT
 import com.granacerta.modules.financialConnection.application.service.FinancialConnectionApplicationService;
 import com.granacerta.modules.financialConnection.application.usecase.CreateFinancialConnectionUseCase;
 import com.granacerta.modules.financialConnection.application.usecase.GenerateConnectionTokenUseCase;
-import com.granacerta.modules.financialConnection.application.usecase.Item.*;
+import com.granacerta.modules.financialConnection.application.usecase.HandleFinancialConnectionUpdateUseCase;
+import com.granacerta.modules.financialConnection.application.usecase.Imports.ImportCreditCardInvoicesUseCase;
+import com.granacerta.modules.financialConnection.application.usecase.Imports.ImportFinancialAccountsUseCase;
+import com.granacerta.modules.financialConnection.application.usecase.Imports.ImportTransactionsUseCase;
 
+import com.granacerta.modules.financialConnection.application.usecase.Process.ProcessFinancialConnectionCreatedUseCase;
+import com.granacerta.modules.financialConnection.application.usecase.Process.ProcessTransactionCreatedUseCase;
+import com.granacerta.modules.financialConnection.application.usecase.SyncConnection.SynchronizeFinancialConnectionUseCase;
+import com.granacerta.modules.financialConnection.application.usecase.SyncConnection.SynchronizePartiallyUpdatedProducts;
+import com.granacerta.modules.financialConnection.application.usecase.SyncConnection.UpdateConnectionStatusUseCase;
 import com.granacerta.modules.financialConnection.domain.repository.FinancialConnectionRepository;
 
+import com.granacerta.modules.financialConnection.infra.persistence.external.pluggy.webhook.dispatcher.ItemStatusDispatcher;
 import com.granacerta.modules.financialInstitution.application.usecase.CreateFinancialInstitutionUseCase;
 import com.granacerta.modules.financialInstitution.domain.repository.FinancialInstitutionRepository;
 import com.granacerta.modules.financialProfile.application.usecase.CreateFinancialProfileUseCase;
@@ -182,15 +193,26 @@ public InvoiceResolver invoiceResolver(InvoiceRepository invoiceRepository) {
             FinancialConnectionRepository financialConnectionRepository,
             FinancialAccountRepository financialAccountRepository   ,
 
-            FinancialAccountProviderGateway financialAccountProviderGateway
+            FinancialAccountProviderGateway financialAccountProviderGateway,
+            ImportCreditCardInvoicesUseCase importCreditCardInvoicesUseCase
 
 
     ){
         return new ImportFinancialAccountsUseCase(
-                financialConnectionRepository,financialAccountRepository,financialAccountProviderGateway
+                financialConnectionRepository,financialAccountRepository,financialAccountProviderGateway,importCreditCardInvoicesUseCase
         );
     }
 
+    @Bean
+    
+    public ImportCreditCardInvoicesUseCase importCreditCardInvoicesUseCase (
+            FinancialAccountRepository financialAccountRepository,
+            FinancialAccountProviderGateway financialAccountProviderGateway,
+            InvoiceRepository invoiceRepository,FinancialConnectionRepository financialConnectionRepository
+
+    ){
+        return new ImportCreditCardInvoicesUseCase(financialAccountRepository   ,financialAccountProviderGateway,invoiceRepository,financialConnectionRepository);
+    }
 
 
     @Bean
@@ -198,16 +220,10 @@ public InvoiceResolver invoiceResolver(InvoiceRepository invoiceRepository) {
         return new GenerateConnectionTokenUseCase(financialConnectionProviderGateway);
     }
 
-    @Bean
-    public ProcessFinancialConnectionLoginSuccessUseCase handlePluggyLoginSucceededUseCase(FinancialConnectionProviderGateway financialConnectionProviderGateway, FinancialConnectionApplicationService financialConnectionApplicationService, ImportFinancialAccountsUseCase importFinancialAccountsUseCase) {
-        return new ProcessFinancialConnectionLoginSuccessUseCase(financialConnectionProviderGateway, financialConnectionApplicationService, importFinancialAccountsUseCase);
-    }
 
     @Bean
-    public ProcessFinancialConnectionCreatedUseCase handleItemCreatedUseCase (FinancialConnectionApplicationService financialConnectionApplicationService, FinancialConnectionProviderGateway financialConnectionProviderGateway
-    , SyncFinancialConnectionUseCase syncFinancialConnectionUseCase){
-
-        return new ProcessFinancialConnectionCreatedUseCase(financialConnectionApplicationService,financialConnectionProviderGateway,syncFinancialConnectionUseCase);
+    public ProcessFinancialConnectionCreatedUseCase handleItemCreatedUseCase (FinancialConnectionApplicationService financialConnectionApplicationService, FinancialConnectionProviderGateway financialConnectionProviderGateway) {
+        return new ProcessFinancialConnectionCreatedUseCase(financialConnectionApplicationService,financialConnectionProviderGateway);
 
     }
 
@@ -215,15 +231,26 @@ public InvoiceResolver invoiceResolver(InvoiceRepository invoiceRepository) {
     public ImportTransactionsUseCase importTransactionsUseCase (FinancialConnectionRepository financialConnectionRepository,
                                                                 FinancialTransactionProviderGateway financialTransactionProviderGateway,
                                                                 FinancialAccountRepository financialAccountRepository,
+                                                                ResolveTransactionCategoryUseCase resolveTransactionCategoryUseCase,
                                                                 TransactionRepository transactionRepository) {
-        return new ImportTransactionsUseCase(financialConnectionRepository,financialTransactionProviderGateway,financialAccountRepository,transactionRepository);
+        return new ImportTransactionsUseCase(financialConnectionRepository,financialTransactionProviderGateway,financialAccountRepository,resolveTransactionCategoryUseCase,transactionRepository);
     }
 
     @Bean
-    public SyncFinancialConnectionUseCase syncFinancialConnectionUseCase (
-            FinancialConnectionRepository financialConnectionRepository,ImportFinancialAccountsUseCase importFinancialAccountsUseCase,ImportTransactionsUseCase importTransactionsUseCase
+    public ResolveTransactionCategoryUseCase resolveTransactionCategoryUseCase  (TransactionCategoryClassifier categoryClassifier, CategoryRepository categoryRepository) {
+        return new ResolveTransactionCategoryUseCase(categoryClassifier, categoryRepository);
+    }
+
+    @Bean
+    public TransactionCategoryClassifier transactionCategoryClassifier() {
+        return new TransactionCategoryClassifier();
+    }
+
+    @Bean
+    public SynchronizeFinancialConnectionUseCase syncFinancialConnectionUseCase (
+            FinancialConnectionRepository financialConnectionRepository,ImportFinancialAccountsUseCase importFinancialAccountsUseCase,ImportTransactionsUseCase importTransactionsUseCase,FinancialConnectionProviderGateway financialConnectionProviderGateway
     ){
-        return new SyncFinancialConnectionUseCase(financialConnectionRepository,importFinancialAccountsUseCase,importTransactionsUseCase);
+        return new SynchronizeFinancialConnectionUseCase(financialConnectionRepository,importFinancialAccountsUseCase,importTransactionsUseCase,financialConnectionProviderGateway);
     }
 
     @Bean
@@ -231,10 +258,11 @@ public InvoiceResolver invoiceResolver(InvoiceRepository invoiceRepository) {
             FinancialConnectionRepository financialConnectionRepository,
             FinancialTransactionProviderGateway financialTransactionProviderGateway,
             TransactionRepository transactionRepository,
-            FinancialAccountRepository financialAccountRepository
+            FinancialAccountRepository financialAccountRepository,
+            ResolveTransactionCategoryUseCase resolveTransactionCategoryUseCase
     ){
         return new ProcessTransactionCreatedUseCase(
-                financialConnectionRepository,financialTransactionProviderGateway,transactionRepository,financialAccountRepository
+                financialConnectionRepository,financialTransactionProviderGateway,transactionRepository,financialAccountRepository,resolveTransactionCategoryUseCase
         );
     }
 
@@ -243,6 +271,24 @@ public InvoiceResolver invoiceResolver(InvoiceRepository invoiceRepository) {
             FinancialConnectionRepository financialConnectionRepository
     ){
         return new UpdateConnectionStatusUseCase(financialConnectionRepository);
+    }
+
+    @Bean
+    public HandleFinancialConnectionUpdateUseCase handleFinancialConnectionUpdateUseCase (
+        ItemStatusDispatcher itemStatusDispatcher,FinancialConnectionProviderGateway financialConnectionProviderGateway
+    ){
+return new HandleFinancialConnectionUpdateUseCase(itemStatusDispatcher,financialConnectionProviderGateway);
+    }
+
+    @Bean
+    public SynchronizePartiallyUpdatedProducts synchronizePartiallyUpdatedProducts(
+            ImportTransactionsUseCase importTransactionsUseCase,
+            ImportFinancialAccountsUseCase importFinancialAccountsUseCase,
+            ImportCreditCardInvoicesUseCase importCreditCardInvoicesUseCase
+    ){
+        return new SynchronizePartiallyUpdatedProducts(
+                importTransactionsUseCase,importFinancialAccountsUseCase,importCreditCardInvoicesUseCase
+        );
     }
 
 

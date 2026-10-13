@@ -2,6 +2,7 @@ package com.granacerta.modules.category.infra.persistence.entity;
 
 
 
+import com.granacerta.modules.category.domain.enums.CategorySource;
 import com.granacerta.modules.category.domain.enums.CategoryStatus;
 import com.granacerta.modules.category.domain.enums.CategoryType;
 import jakarta.persistence.*;
@@ -29,7 +30,7 @@ public class CategoryEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "user_id", nullable = false)
+    @Column(name = "user_id")
     private UUID userId;
 
     @Column(name = "parent_category_id")
@@ -43,9 +44,15 @@ public class CategoryEntity {
     private CategoryType type;
 
     @Column(nullable = false)
-
     @Enumerated(EnumType.STRING)
     private CategoryStatus status;
+
+    @Column(nullable = false, length = 50)
+    private String code;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "category_source", nullable = false)
+    private CategorySource categorySource;
 
     @Column(name = "created_at", nullable = false)
     @CreationTimestamp
@@ -54,4 +61,5 @@ public class CategoryEntity {
     @Column(name = "updated_at", nullable = false)
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
 }

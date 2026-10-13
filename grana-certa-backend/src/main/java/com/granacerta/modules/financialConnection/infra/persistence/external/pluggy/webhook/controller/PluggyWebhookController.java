@@ -35,7 +35,7 @@ public class PluggyWebhookController {
     public ResponseEntity<Void> handle(
             @RequestBody PluggyWebhookPayload request
     ) {
-
+        log.info("Handling request {}", request.toString());
             PluggyWebhookCommand command = mapper.toCommand(request);
             publisher.publish(command);
 

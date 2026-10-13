@@ -1,9 +1,12 @@
 package com.granacerta.modules.invoice.domain.entity;
 
+import com.granacerta.modules.financialAccount.domain.entity.FinancialAccount;
+import com.granacerta.modules.financialConnection.application.gateway.ExternalInvoice;
 import com.granacerta.modules.invoice.application.usecase.CreateInvoiceCommand;
 import com.granacerta.modules.invoice.domain.enums.InvoiceStatus;
 
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
@@ -21,6 +24,9 @@ public class Invoice {
     private LocalDate openingDate;
 
     private LocalDate dueDate;
+    private String externalId;
+
+    private BigDecimal totalAmount;
 
 
 
@@ -30,6 +36,7 @@ public class Invoice {
 
     private LocalDateTime updatedAt;
 
+
     public static Invoice create(CreateInvoiceCommand command) {
 
         Invoice invoice = new Invoice();
@@ -37,6 +44,7 @@ public class Invoice {
 
         invoice.accountId = command.accountId();
         invoice.referenceMonth = command.referenceMonth();
+
         invoice.closingDate = command.closingDate();
         invoice.dueDate = command.dueDate();
         invoice.openingDate = command.openingDate();
@@ -44,8 +52,42 @@ public class Invoice {
         invoice.status = InvoiceStatus.OPEN;
         invoice.createdAt = LocalDateTime.now();
         invoice.updatedAt = LocalDateTime.now();
+            invoice.setTotalAmount(command.totalAmount());
 
         return invoice;
+    }
+
+    public static Invoice createFromConnection(
+            FinancialAccount account,
+            ExternalInvoice externalInvoice
+    ) {
+        LocalDateTime now = LocalDateTime.now();
+
+        Invoice invoice = new Invoice();
+
+
+        invoice.setAccountId(account.getId());
+        invoice.setReferenceMonth(
+                YearMonth.from(externalInvoice.dueDate())
+        );
+        invoice.setClosingDate(null);
+        invoice.setOpeningDate(null);
+        invoice.setDueDate(externalInvoice.dueDate().toLocalDate());
+        invoice.setExternalId(externalInvoice.externalId());
+        invoice.setStatus(InvoiceStatus.OPEN);
+        invoice.setCreatedAt(now);
+        invoice.setUpdatedAt(now);
+        invoice.setTotalAmount(externalInvoice.totalAmount());
+
+        return invoice;
+    }
+
+    public BigDecimal getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(BigDecimal totalAmount) {
+        this.totalAmount = totalAmount;
     }
 
     public UUID getAccountId() {
@@ -72,6 +114,13 @@ public class Invoice {
         this.id = id;
     }
 
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
+    }
 
     public YearMonth getReferenceMonth() {
         return referenceMonth;
@@ -134,5 +183,12 @@ public class Invoice {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public void updateFromExternalData(ExternalInvoice externalInvoice) {
+        this.dueDate = externalInvoice.dueDate()
+                .toLocalDate();
+
+        this.updatedAt = LocalDateTime.now();
     }
 }

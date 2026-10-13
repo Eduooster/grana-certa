@@ -10,4 +10,6 @@ public interface FinancialAccountProviderGateway {
     List<ExternalFinancialAccount> fetchAccounts(
             String itemId
     );
+
+    List<ExternalInvoice> fetchInvoices(String externalId);
 }

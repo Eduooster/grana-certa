@@ -1,8 +1,10 @@
 package com.granacerta.modules.financialConnection.application.service;
 
+import ai.pluggy.client.response.ExecutionStatus;
 import ai.pluggy.client.response.ItemResponse;
 import com.granacerta.modules.financialConnection.application.gateway.FinancialConnectionProviderGateway;
 import com.granacerta.modules.financialConnection.domain.entity.FinancialConnection;
+import com.granacerta.modules.financialConnection.domain.enums.ConnectionExecutionResult;
 import com.granacerta.modules.financialConnection.domain.repository.FinancialConnectionRepository;
 import com.granacerta.modules.financialConnection.infra.persistence.external.pluggy.client.dto.ExternalFinancialConnection;
 import com.granacerta.modules.financialInstitution.domain.entity.FinancialInstitution;
@@ -29,7 +31,9 @@ public class FinancialConnectionApplicationService {
             String institutionName,
             String institutionImageUrl,
             String health,
-            String type
+            String type,
+            ConnectionExecutionResult executionStatus
+
     ) {
         return financialConnectionRepository
                 .findByExternalId(externalId)
@@ -40,7 +44,8 @@ public class FinancialConnectionApplicationService {
                         institutionName,
                         institutionImageUrl,
                         health,
-                        type
+                        type,
+                        executionStatus
                 ));
     }
 
@@ -51,7 +56,8 @@ public class FinancialConnectionApplicationService {
             String institutionName,
             String institutionImageUrl,
             String health,
-            String type
+            String type,
+            ConnectionExecutionResult executionStatus
     ) {
         FinancialInstitution institution =
                 resolveInstitution(
@@ -67,7 +73,8 @@ public class FinancialConnectionApplicationService {
                         userId,
                         institution.getId(),
                         "PLUGGY",
-                        externalId
+                        externalId,
+                        executionStatus
                 );
 
         return financialConnectionRepository.save(connection);

@@ -10,6 +10,7 @@ public record CreateInvoiceRequest(
         YearMonth referenceMonth,
         LocalDate openingDate,
         LocalDate closingDate,
-        LocalDate dueDate
+        LocalDate dueDate,
+        BigDecimal totalAmount
 ) {
 }

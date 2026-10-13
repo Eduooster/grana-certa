@@ -1,5 +1,6 @@
-package com.granacerta.modules.financialConnection.application.usecase.Item;
+package com.granacerta.modules.financialConnection.application.usecase.Process;
 
+import com.granacerta.modules.category.application.usecase.ResolveTransactionCategoryUseCase;
 import com.granacerta.modules.financialAccount.domain.entity.FinancialAccount;
 import com.granacerta.modules.financialAccount.domain.exception.FinancialAccountNotFoundException;
 import com.granacerta.modules.financialAccount.domain.repository.FinancialAccountRepository;
@@ -14,8 +15,9 @@ import com.granacerta.modules.transaction.domain.repository.TransactionRepositor
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
+
 @Slf4j
 
 public class ProcessTransactionCreatedUseCase {
@@ -24,66 +26,57 @@ public class ProcessTransactionCreatedUseCase {
     private final FinancialTransactionProviderGateway transactionProvider;
     private final TransactionRepository transactionRepository;
     private final FinancialAccountRepository financialAccountRepository;
+    private final ResolveTransactionCategoryUseCase resolveTransactionCategoryUseCase;
 
     public ProcessTransactionCreatedUseCase(
             FinancialConnectionRepository financialConnectionRepository,
             FinancialTransactionProviderGateway transactionProvider,
-            TransactionRepository transactionRepository, FinancialAccountRepository financialAccountRepository
+            TransactionRepository transactionRepository, FinancialAccountRepository financialAccountRepository, ResolveTransactionCategoryUseCase resolveTransactionCategoryUseCase
     ) {
         this.financialConnectionRepository = financialConnectionRepository;
         this.transactionProvider = transactionProvider;
         this.transactionRepository = transactionRepository;
         this.financialAccountRepository = financialAccountRepository;
+        this.resolveTransactionCategoryUseCase = resolveTransactionCategoryUseCase;
     }
 
     @Transactional
     public void execute(ProcessTransactionCreatedCommand command) {
-        log.info("Starting execution of ProcessTransactionCreatedCommand for itemId: {} and accountId: {}",
-                command.itemId(), command.accountId());
 
         FinancialConnection connection =
                 financialConnectionRepository.findByExternalId(command.itemId())
-                        .orElseThrow(() -> {
-                            log.warn("Financial connection not found for itemId: {}", command.itemId());
-                            return new FinancialConnectionNotFoundException("No financial connection found for itemId: " + command.itemId());
-                        });
+                        .orElseThrow(() -> new FinancialConnectionNotFoundException("No financial connection found for itemId: " + command.itemId()));
 
-        log.debug("Found financial connection with internal ID: {} for itemId: {}", connection.getId(), command.itemId());
 
         FinancialAccount account =
                 financialAccountRepository
                         .findByExternalId(command.accountId())
                         .orElseThrow(
-                                () -> {
-                                    log.warn("Financial account not found for accountId: {}", command.accountId());
-                                    return new FinancialAccountNotFoundException("No financial account found for accountId: " + command.accountId());
-                                }
+                                () -> new FinancialAccountNotFoundException("No financial account found for accountId: " + command.accountId())
                         );
 
-        log.debug("Found financial account with internal ID: {} for accountId: {}", account.getId(), command.accountId());
-
-        log.info("Fetching created transactions from provider using link: {}", command.createdTransactionsLink());
         List<ExternalTransaction> transactions =
                 transactionProvider.getCreatedTransactions(
                         command.createdTransactionsLink()
                 );
-
-        log.info("Fetched {} external transaction(s) from provider.", transactions.size());
-
         int savedCount = 0;
         int skippedCount = 0;
 
         for (ExternalTransaction externalTransaction : transactions) {
-            log.info("Processing external transaction with externalId: {}", externalTransaction.externalId());
+
 
             if (transactionRepository.existsByAccountIdAndExternalId(
                     account.getId(), externalTransaction.externalId()
             )) {
-                log.debug("Transaction with externalId: {} already exists for connection ID: {}. Skipping.",
-                        externalTransaction.externalId(), connection.getId());
+
                 skippedCount++;
                 continue;
             }
+
+
+            UUID categoryId = resolveTransactionCategoryUseCase
+                    .execute(externalTransaction.description())
+                    .orElse(null);
 
             Transaction transaction =
                     Transaction.createFromProvider(
@@ -93,15 +86,15 @@ public class ProcessTransactionCreatedUseCase {
                             externalTransaction.type(),
                             externalTransaction.amount(),
                             externalTransaction.transactionDate(),
-                            externalTransaction.description()
-                    );
+                            externalTransaction.description(),
+                            categoryId);
 
             transactionRepository.save(transaction);
             savedCount++;
-            log.trace("Successfully saved transaction with externalId: {}", externalTransaction.externalId());
+
         }
 
-        connection.setLastSyncedAt(LocalDateTime.now());
+        connection.updateLastSync();
 
         log.info("Finished execution of ProcessTransactionCreatedCommand. Saved: {}, Skipped (duplicates): {}",
                 savedCount, skippedCount);

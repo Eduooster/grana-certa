@@ -36,13 +36,16 @@ public class InvoiceEntity {
     @Column(name = "reference_month", nullable = false)
     private YearMonth referenceMonth;
 
-    @Column(name = "closing_date", nullable = false)
+    @Column(name = "closing_date")
     private LocalDate closingDate;
 
-    @Column(name = "due_date", nullable = false)
+    @Column(name = "due_date")
     private LocalDate dueDate;
-    @Column(name = "opening_date", nullable = false)
+    @Column(name = "opening_date")
     private LocalDate openingDate;
+
+    @Column(name = "total_amount")
+    private BigDecimal totalAmount;
 
 
 
@@ -57,4 +60,7 @@ public class InvoiceEntity {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @Column(name = "external_id")
+    private String externalId;
 }

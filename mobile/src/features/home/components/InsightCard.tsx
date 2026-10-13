@@ -1,5 +1,4 @@
 import { colors } from "@/constants/colors";
-import { cardShadow } from "@/constants/layout";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { Pressable, Text, View } from "react-native";
 
@@ -8,11 +7,11 @@ export function InsightCard() {
   return (
     <View className="mb-8">
       <View className="mb-4 flex-row items-center justify-between px-1">
-        <Text className="text-xl font-bold" style={{ color: "#1F2937" }}>
+          <Text className="text-[19px] font-bold tracking-tight" style={{ color: "#1F2937" }}>
           O GranaCerta percebeu
         </Text>
         <View className="flex-row items-center gap-1.5">
-          <Feather name="zap" size={14} color={colors.secondary} />
+          <Feather name="zap" size={15} color={colors.secondary} strokeWidth={1.8} />
           <Text className="text-xs font-bold uppercase tracking-wide" style={{ color: colors.secondary }}>
             Análise automática
           </Text>
@@ -20,14 +19,14 @@ export function InsightCard() {
       </View>
 
       <Pressable 
-        className="flex-row items-center rounded-[24px] p-5"
-        style={[{ backgroundColor: "#F5F3FF" }, cardShadow]}
+        className="flex-row items-center rounded-[24px] border border-violet-100/80 p-5"
+        style={[{ backgroundColor: "#F7F5FF", shadowColor: "#35245B", shadowOffset: { width: 0, height: 7 }, shadowOpacity: 0.08, shadowRadius: 18, elevation: 3 }]}
       >
         <View 
           className="mr-4 h-12 w-12 items-center justify-center rounded-full"
           style={{ backgroundColor: colors.primary }}
         >
-          <Feather name="coffee" size={20} color="#FFFFFF" />
+          <Feather name="coffee" size={20} color="#FFFFFF" strokeWidth={1.8} />
         </View>
 
         <View className="flex-1">

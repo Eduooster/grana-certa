@@ -1,7 +1,5 @@
 package com.granacerta.modules.transaction.domain.entity;
 
-import com.granacerta.modules.financialAccount.domain.entity.FinancialAccount;
-import com.granacerta.modules.recurrence.application.usecase.CreateRecurrenceCommand;
 import com.granacerta.modules.transaction.application.usecase.CreateTransactionCommand;
 import com.granacerta.modules.transaction.application.usecase.UpdateTransactionCommand;
 import com.granacerta.modules.transaction.domain.enums.TransactionSource;
@@ -151,8 +149,8 @@ public class Transaction {
             TransactionType type,
             BigDecimal amount,
             LocalDate transactionDate,
-            String description
-    ) {
+            String description,
+            UUID categoryId) {
         Transaction transaction = new Transaction();
 
 
@@ -167,6 +165,7 @@ public class Transaction {
         transaction.createdAt = LocalDateTime.now();
         transaction.updatedAt = LocalDateTime.now();
         transaction.active = true;
+        transaction.categoryId = categoryId;
 
         return transaction;
     }

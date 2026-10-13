@@ -9,6 +9,7 @@ import com.granacerta.modules.transaction.domain.entity.Transaction;
 import com.granacerta.modules.transaction.domain.enums.TransactionType;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
@@ -29,13 +30,15 @@ public class FinancialAccount {
     private LocalDateTime updatedAt;
     private Integer closingDay;
     private Integer dueDay;
+    private BigDecimal creditLimit;
+    private BigDecimal availableCreditLimit;
     public FinancialAccount() { }
 
-    public FinancialAccount(UUID id, UUID userId, UUID connectionId, String name, FinancialAccountType type, BigDecimal balance, BigDecimal initialBalance, FinancialAccountStatus status, FinancialAccountSource source, String externalId, LocalDateTime createdAt, LocalDateTime updatedAt, Integer closingDay, Integer dueDay) {
+    public FinancialAccount(String name, UUID id, UUID userId, UUID connectionId, FinancialAccountType type, BigDecimal balance, BigDecimal initialBalance, FinancialAccountStatus status, FinancialAccountSource source, String externalId, LocalDateTime createdAt, LocalDateTime updatedAt, Integer closingDay, Integer dueDay, BigDecimal creditLimit, BigDecimal availableCreditLimit) {
+        this.name = name;
         this.id = id;
         this.userId = userId;
         this.connectionId = connectionId;
-        this.name = name;
         this.type = type;
         this.balance = balance;
         this.initialBalance = initialBalance;
@@ -46,14 +49,16 @@ public class FinancialAccount {
         this.updatedAt = updatedAt;
         this.closingDay = closingDay;
         this.dueDay = dueDay;
+        this.creditLimit = creditLimit;
+        this.availableCreditLimit = availableCreditLimit;
     }
 
     public static FinancialAccount createDefaultWallet(UUID userId) {
         return new FinancialAccount(
+                "Carteira",
                 null,
                 userId,
                 null,
-                "Carteira",
                 FinancialAccountType.WALLET,
                 BigDecimal.ZERO,
                 BigDecimal.ZERO,
@@ -61,7 +66,11 @@ public class FinancialAccount {
                 FinancialAccountSource.MANUAL,
                 null,
                 null,
-                null,null,null
+                null,
+                null,
+                null,
+                null,
+                null
         );
     }
 
@@ -123,6 +132,54 @@ public class FinancialAccount {
 
     }
 
+    public static FinancialAccount createCreditCardFromConnection(
+            FinancialConnection connection,
+            String name,
+            BigDecimal balance,
+            String externalId,
+            BigDecimal creditLimit,
+            BigDecimal availableCreditLimit,
+            Integer dueDay
+            ,Integer closeDay
+    ) {
+        FinancialAccount account = new FinancialAccount();
+        account.userId = connection.getUserId();
+        account.setConnectionId(connection.getId());
+        account.name = name;
+        account.balance = balance;
+        account.externalId = externalId;
+        account.type = FinancialAccountType.CREDIT;
+        account.status = FinancialAccountStatus.ACTIVE;
+        account.initialBalance = balance;
+        account.updatedAt = LocalDateTime.now();
+        account.source   = FinancialAccountSource.OPEN_FINANCE;
+        account.closingDay = closeDay;
+        account.dueDay = dueDay;
+
+        account.creditLimit = creditLimit;
+        account.availableCreditLimit = availableCreditLimit;
+
+        return account;
+
+    }
+
+
+
+    public BigDecimal getCreditLimit() {
+        return creditLimit;
+    }
+
+    public void setCreditLimit(BigDecimal creditLimit) {
+        this.creditLimit = creditLimit;
+    }
+
+    public BigDecimal getAvailableCreditLimit() {
+        return availableCreditLimit;
+    }
+
+    public void setAvailableCreditLimit(BigDecimal availableCreditLimit) {
+        this.availableCreditLimit = availableCreditLimit;
+    }
 
     public void applyDebit(BigDecimal amount) {
         this.balance = this.balance.subtract(amount);

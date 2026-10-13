@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 
 
 type HomeHeaderType = {
@@ -50,10 +50,11 @@ export function HomeHeader({ data }: HomeHeaderProps) {
         className="h-11 w-11 items-center justify-center rounded-full border border-slate-100 bg-white"
         hitSlop={8}
       >
-        <Ionicons
-          name="notifications-outline"
+        <Feather
+          name="bell"
           size={22}
           color="#475569"
+          strokeWidth={1.7}
         />
       </Pressable>
     </View>

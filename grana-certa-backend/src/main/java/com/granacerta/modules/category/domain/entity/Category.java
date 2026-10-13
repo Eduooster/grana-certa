@@ -21,6 +21,7 @@ public class Category {
 
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
+    private String code;
 
 
     public static Category create(CreateCategoryCommand command) {
@@ -35,6 +36,41 @@ public class Category {
         return category;
 
 
+    }
+
+    public static Category createSystemCategory(String name, String code, CategoryType type) {
+        Category category = new Category();
+
+        category.code = code;
+        category.name = name;
+        category.type = type;
+        category.status = CategoryStatus.ACTIVE;
+        category.categorySource = CategorySource.SYSTEM;
+        return category;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
+    }
+
+    public CategorySource getCategorySource() {
+        return categorySource;
+    }
+
+    public void setCategorySource(CategorySource categorySource) {
+        this.categorySource = categorySource;
     }
 
     public UUID getId() {

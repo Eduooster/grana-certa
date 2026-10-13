@@ -43,17 +43,9 @@ public class PluggyTransactionProvider
             String accountId
     ) {
 
-        log.info(
-                "Starting Pluggy transactions fetch. AccountId: {}",
-                accountId
-        );
+
 
         String apiKey = generateApiKey();
-
-        log.info(
-                "Pluggy API key generated successfully. AccountId: {}",
-                accountId
-        );
 
         List<PluggyTransactionResponse> transactions =
                 new ArrayList<>();
@@ -63,12 +55,6 @@ public class PluggyTransactionProvider
 
         do {
 
-            log.info(
-                    "Fetching Pluggy transactions page. AccountId: {}, Page: {}, Next: {}",
-                    accountId,
-                    page,
-                    next
-            );
 
             PluggyTransactionsResponse response =
                     fetchPage(
@@ -263,7 +249,7 @@ public class PluggyTransactionProvider
         }
 
         log.info(
-                "Pluggy API key generated successfully."
+                "Pluggy API key generated successfully." + response.apiKey()
         );
 
         return response.apiKey();

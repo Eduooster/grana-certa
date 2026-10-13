@@ -1,14 +1,12 @@
 package com.granacerta.modules.financialConnection.infra.persistence.external.pluggy.webhook.handler;
 
-import com.granacerta.modules.financialConnection.application.usecase.Item.ImportTransactionsUseCase;
-import com.granacerta.modules.financialConnection.application.usecase.Item.ProcessTransactionCreatedUseCase;
+import com.granacerta.modules.financialConnection.application.usecase.Process.ProcessTransactionCreatedUseCase;
 import com.granacerta.modules.financialConnection.application.usecase.ProcessTransactionCreatedCommand;
 import com.granacerta.modules.financialConnection.infra.persistence.external.pluggy.domain.PluggyWebhookCommand;
 import com.granacerta.modules.financialConnection.infra.persistence.external.pluggy.domain.PluggyWebhookEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 
 @Slf4j
 @Component
@@ -28,7 +26,7 @@ public class TranscationsCreatedHandler implements PluggyEventHandler{
         ProcessTransactionCreatedCommand processTransactionCreatedCommand = new ProcessTransactionCreatedCommand(
                 command.itemId(), command.accountId(),command.createdTransactionsLink()
         );
-        processTransactionCreatedUseCase.execute(processTransactionCreatedCommand);
+       processTransactionCreatedUseCase.execute(processTransactionCreatedCommand);
 
     }
 }

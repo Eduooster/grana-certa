@@ -2,6 +2,7 @@ package com.granacerta.modules.invoice.infra.persistence.adapter;
 
 import com.granacerta.modules.invoice.domain.entity.Invoice;
 import com.granacerta.modules.invoice.domain.repository.InvoiceRepository;
+import com.granacerta.modules.invoice.infra.persistence.entity.InvoiceEntity;
 import com.granacerta.modules.invoice.infra.persistence.mapper.InvoiceEntityMapper;
 import com.granacerta.modules.invoice.infra.persistence.repository.JpaInvoiceRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,4 +32,13 @@ public class InvoiceRepositoryImpl implements InvoiceRepository {
                 accountId, date,date
         ).map(invoiceEntityMapper::toDomain);
     }
+
+    @Override
+    public Optional<Invoice> findByExternalIdAndAccountId(String externalId, UUID accountId) {
+        return jpaInvoiceRepository.findByExternalIdAndAccountId(
+                externalId, accountId
+        ).map(invoiceEntityMapper::toDomain);
+    }
+
+
 }

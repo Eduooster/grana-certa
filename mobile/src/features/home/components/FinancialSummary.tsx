@@ -1,8 +1,6 @@
 import { colors } from "@/constants/colors";
-import { cardShadow } from "@/constants/layout";
 import { Feather } from "@expo/vector-icons";
-import { View, Text } from "react-native";
-
+import { Text, View } from "react-native";
 
 type FinancialSummaryProps = {
   income: number;
@@ -10,71 +8,51 @@ type FinancialSummaryProps = {
   result: number;
 };
 
-
-
-
 export function FinancialSummary({ income, expenses, result }: FinancialSummaryProps) {
-  const formatCurrency = (value: number) => {
-    return value.toLocaleString("pt-BR", {
+  const formatCurrency = (value: number) =>
+    value.toLocaleString("pt-BR", {
       style: "currency",
       currency: "BRL",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     });
-  };
+
+  const items = [
+    { label: "Receitas", value: formatCurrency(income), color: colors.primary, icon: "trending-up" as const },
+    { label: "Despesas", value: formatCurrency(expenses), color: colors.primary, icon: "trending-down" as const },
+    { label: "Resultado", value: `+${formatCurrency(result)}`, color: colors.primary, icon: "activity" as const },
+  ];
 
   return (
-    <View className="mb-8 flex-row justify-between gap-3">
-      <View 
-        className="flex-1 rounded-[20px] p-4"
-        style={[{ backgroundColor: "#FFFFFF" }, cardShadow]}
-      >
-        <View className="mb-3 flex-row items-center gap-2">
-          <View className="rounded-full bg-green-50 p-1.5">
-            <Feather name="arrow-down-left" size={16} color={colors.success} />
+    <View 
+      className="mb-7 flex-row items-center rounded-[24px] border border-white/80 bg-white/90 px-2 py-4 shadow-sm"
+      style={{ 
+        shadowColor: "#988bb5", 
+        shadowOffset: { width: 0, height: 8 }, 
+        shadowOpacity: 0.07, 
+        shadowRadius: 2, 
+        elevation: 3 
+      }}
+    >
+      {items.map((item, index) => (
+        <View key={item.label} className="flex-1 items-center px-1 bg-white">
+         
+          <View className="mb-2.5 h-9 w-9 items-center justify-center rounded-full" style={{  }}>
+            <Feather name={item.icon} size={17} color={item.color} strokeWidth={2} />
           </View>
-          <Text className="text-xs font-semibold text-gray-500">
-            Receitass
+          
+          <Text className="text-[11px] font-medium tracking-wide text-slate-500">{item.label}</Text>
+          
+          <Text className="mt-1 text-[15px] font-bold tracking-tight" style={{ color: item.color }} numberOfLines={1} adjustsFontSizeToFit>
+            {item.value}
           </Text>
-        </View>
-        <Text className="text-base font-bold" style={{ color: colors.success }}>
-          {formatCurrency(income)}
-        </Text>
-      </View>
 
-      <View 
-        className="flex-1 rounded-[20px] p-4"
-        style={[{ backgroundColor: "#FFFFFF" }, cardShadow]}
-      >
-        <View className="mb-3 flex-row items-center gap-2">
-          <View className="rounded-full bg-red-50 p-1.5">
-            <Feather name="arrow-up-right" size={16} color={colors.danger} />
-          </View>
-          <Text className="text-xs font-semibold text-gray-500">
-            Despesas
-          </Text>
+       
+          {index < items.length - 1 && (
+            <View className="absolute right-0 top-3 h-[50px] w-px bg-violet-100" />
+          )}
         </View>
-        <Text className="text-base font-bold" style={{ color: colors.danger }}>
-          {formatCurrency(expenses)}
-        </Text>
-      </View>
-
-      <View 
-        className="flex-1 rounded-[20px] p-4"
-        style={[{ backgroundColor: "#FFFFFF" }, cardShadow]}
-      >
-        <View className="mb-3 flex-row items-center gap-2">
-          <View className="rounded-full bg-indigo-50 p-1.5">
-            <Feather name="credit-card" size={16} color={colors.primary} />
-          </View>
-          <Text className="text-xs font-semibold text-gray-500">
-            Resultado
-          </Text>
-        </View>
-        <Text className="text-base font-bold" style={{ color: colors.primary }}>
-          +{formatCurrency(result)}
-        </Text>
-      </View>
+      ))}
     </View>
   );
 }

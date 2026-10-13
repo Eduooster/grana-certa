@@ -1,6 +1,7 @@
 package com.granacerta.modules.category.infra.persistence.adapter;
 
 import com.granacerta.modules.category.domain.entity.Category;
+import com.granacerta.modules.category.domain.enums.CategorySource;
 import com.granacerta.modules.category.domain.enums.CategoryStatus;
 import com.granacerta.modules.category.domain.repository.CategoryRepository;
 import com.granacerta.modules.category.infra.persistence.mapper.CategoryMapper;
@@ -30,5 +31,10 @@ public class CategoryRepositoryImpl implements CategoryRepository {
         return categoryJpaRepository
                 .findByIdAndUserIdAndStatus(categoryId, userId, status)
                 .map(categoryMapper::toDomain);
+    }
+
+    @Override
+    public Optional<Category> findByCodeAndCategorySource(String name, CategorySource categorySource) {
+        return categoryJpaRepository.findByCodeAndCategorySource(name, categorySource).map(categoryMapper::toDomain);
     }
 }

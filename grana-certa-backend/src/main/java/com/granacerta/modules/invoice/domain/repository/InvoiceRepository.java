@@ -13,4 +13,8 @@ public interface InvoiceRepository {
             UUID accountId,
             LocalDate date
     );
+
+
+
+    Optional<Invoice> findByExternalIdAndAccountId(String externalId, UUID accountId);
 }
